@@ -88,7 +88,7 @@ def random_walk(x, y, input_matrix):
                 list_free_space.append((i,j))
 
     if(0 != len(list_free_space)):
-        next_x, next_y = np.random.choice(list_free_space)
+        next_x, next_y = list_free_space[np.random.randint(len(list_free_space))]
         __input_matrix[next_x][next_y] = __input_matrix[x][y]
         __input_matrix[x][y] = None
 
@@ -132,12 +132,6 @@ cv.waitKey(0)
 for T in range(1000):
     print("T={}".format(T))
 
-    # 漫步移動
-    for i in range(len(list_2D_plane)):
-        for j in range(len(list_2D_plane[i])):
-            if(None == list_2D_plane[i][j]): continue #這個位置沒人
-            random_walk(i, j, list_2D_plane)
-
     # 找到周圍最高分位置
     for i in range(len(list_2D_plane)):
         for j in range(len(list_2D_plane[i])):
@@ -161,6 +155,12 @@ for T in range(1000):
                 list_2D_plane[i][j] = None # 把人趕走
                 display_plane(list_2D_plane)
                 cv.waitKey(1)
+
+    # 漫步移動
+    for i in range(len(list_2D_plane)):
+        for j in range(len(list_2D_plane[i])):
+            if(None == list_2D_plane[i][j]): continue #這個位置沒人
+            random_walk(i, j, list_2D_plane)
 
 
     display_plane(list_2D_plane)
