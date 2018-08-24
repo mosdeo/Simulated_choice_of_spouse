@@ -35,6 +35,23 @@ def find_round_highest_obj(x, y, input_matrix):
                     highest_object = input_matrix[i][j]
                     input_matrix[x][y].wanted_x_y = i,j
 
+# 展示分布
+def display_plane(input_matrix):
+    col_size, row_size = len(input_matrix), len(input_matrix[0])
+    plane = np.zeros((col_size, row_size, 3), np.uint8)
+    for i in range(col_size):
+        for j in range(row_size):
+            if(None == input_matrix[i][j]):
+                plane[i,j] = [0xFF, 0xFF, 0xFF]
+            else:
+                real_score_scale_to_255 = 2.55*input_matrix[i][j].real_score
+                plane[i,j] = {
+                    'M':  [255-real_score_scale_to_255, 255-real_score_scale_to_255, 255],
+                    'F':  [255, 255-real_score_scale_to_255, 255-real_score_scale_to_255],
+                }[input_matrix[i][j].sex]
+            
+    cv.imshow("Plane", cv.resize(plane, None, None, 5, 5, cv.INTER_NEAREST))
+
 
 # 給各 100 位男女，隨機分配真實分數
 list___men, list_women = [], []
@@ -53,20 +70,7 @@ for i in range(len(list_2D_plane)):
         # list___men.append(Human('M', np.random.randint(0, 100)))
         # list_women.append(Human('F', np.random.randint(0, 100)))
 
-# 展示分布
-plane = np.zeros((70, 70, 3), np.uint8)
-for i in range(len(list_2D_plane)):
-    for j in range(len(list_2D_plane[i])):
-        if(None == list_2D_plane[i][j]):
-            plane[i,j] = [0xFF, 0xFF, 0xFF]
-        else:
-            real_score_scale_to_255 = 2.55*list_2D_plane[i][j].real_score
-            plane[i,j] = {
-                'M':  [255-real_score_scale_to_255, 255-real_score_scale_to_255, 255],
-                'F':  [255, 255-real_score_scale_to_255, 255-real_score_scale_to_255],
-            }[list_2D_plane[i][j].sex]
-        
-cv.imshow("Plane", cv.resize(plane, None, None, 5, 5, cv.INTER_NEAREST))
+display_plane(list_2D_plane)
 cv.waitKey(0)
 
 # 打分數
@@ -83,6 +87,9 @@ for i in range(len(list_2D_plane)):
         if(i, j == list_2D_plane[wanted_x][wanted_y].wanted_x_y):
             print("配對成功!")
             list_2D_plane[i][j] = None # 把人趕走
+            display_plane(list_2D_plane)
+            cv.waitKey(1)
 
-
+display_plane(list_2D_plane)
+cv.waitKey(0)
 
