@@ -85,8 +85,9 @@ def random_walk(x, y, input_matrix):
     if(0 != len(list_free_space)):
         next_x, next_y = list_free_space[np.random.randint(len(list_free_space))] #隨機選取沒人的位置
         __input_matrix[next_x][next_y] = __input_matrix[x][y] #把自己放到新位置
+        __input_matrix[next_x][next_y].wanted_x_y = None #經過移動之後要清除心儀對象
         __input_matrix[x][y] = None #舊位置空出來
-        __input_matrix[x][y].wanted_x_y = None #經過移動之後要清除心儀對象
+        
 
 # 展示分布
 def display_plane(input_matrix):
