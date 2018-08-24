@@ -9,19 +9,17 @@ class Human(object):
         self.__feel_score = np.NaN
         self.__feel_score_max = 100
         self.__feel_score_min = 0
+        self.wanted_x_y = None
 
-    def estimator_self_feel_score(self, isSelected, level_score):
+    def estimator_self_feel_score(self, isSelected, other_real_score):
         if(isSelected):
-            # 被選中，提高自信
-            self.__feel_score_min = max(self.__feel_score_min, level_score)
+            self.__feel_score_min = max(self.__feel_score_min, other_real_score) # 被選中，提高自信
         else:
-            # 沒被選中，降低自信
-            self.__feel_score_max = min(self.__feel_score_max, level_score)
-            # 從最高分給自己打分數
-            self.__feel_score = self.__feel_score_max
+            self.__feel_score_max = min(self.__feel_score_max, other_real_score) # 沒被選中，降低自信
+            self.__feel_score = self.__feel_score_max # 從最高分給自己打分數
 
     def get_feel_score(self):
-        if(np.NaN == self.__feel_score):
+        if(np.NaN is self.__feel_score):
             return 100
         else:
             return self.__feel_score
