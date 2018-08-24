@@ -6,7 +6,15 @@ class Human(object):
     def __init__(self, sex, real_score):
         self.sex = sex
         self.real_score = real_score
-        self.__feeL_score = np.NaN
+        self.__feel_score = np.NaN
+        self.__feel_score_max = 0
+        self.__feel_score_min = 100
+
+    def estimator_self_feel_score(self, isSelected, level_score):
+        if(isSelected):
+            self.__feel_score_min = max(self.__feel_score_min, level_score)
+        else:
+            self.__feel_score_max = min(self.__feel_score_max, level_score)
 
     # 在清單中剃除同性
     # def __kick_same_sex(self, list_around_human):
