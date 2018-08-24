@@ -3,38 +3,71 @@ import cv2 as cv
 from Human import Human
 
 # 取得周圍最高分
-def find_round_highest_obj(x, y, input_matrix):
+def find_round_highest_xy(x, y, input_matrix):
     # 處裡邊界條件
+    __input_matrix = input_matrix
     if(0==x):                        x_range = [x, x+1]
-    elif(x+1==len(input_matrix)):    x_range = [x-1, x]
+    elif(x+1==len(__input_matrix)):    x_range = [x-1, x]
     else:                            x_range = [x-1, x, x+1]
     if(0==y):                        y_range = [y, y+1]
-    elif(y+1==len(input_matrix[0])): y_range = [y-1, y]
+    elif(y+1==len(__input_matrix[0])): y_range = [y-1, y]
     else:                            y_range = [y-1, y, y+1]
 
     highest_object = None
     for i in x_range:
         for j in y_range:
-            if(None == input_matrix[i][j]): continue #這個位置沒人
-            else: input_matrix[x][y].wanted_x_y = -1, -1
+            if(None == __input_matrix[i][j]): continue #這個位置沒人
+            else: __input_matrix[x][y].wanted_x_y = -1, -1
 
             # 跳過自己、跳過同性
             if(i==x and j==y):continue
-            if(input_matrix[x][y].sex == input_matrix[i][j].sex): continue
+            if(__input_matrix[x][y].sex == __input_matrix[i][j].sex): continue
             
             # 如果口袋是空的
             if(None == highest_object):
-                # 如果分數大於等於自己，放進口袋
-                if(input_matrix[i][j].real_score > input_matrix[x][y].real_score):
-                    highest_object = input_matrix[i][j]
-                    input_matrix[x][y].wanted_x_y = i,j
+                # 如果分數大於等於自己自覺分數，放進口袋
+                if(__input_matrix[i][j].real_score > __input_matrix[x][y].real_score):
+                    highest_object = __input_matrix[i][j]
+                    __input_matrix[x][y].wanted_x_y = i,j
             # 如果口袋不是空的
             else:
                 # 如果分數大於等於口袋，放進口袋
-                if(input_matrix[i][j].real_score > highest_object.real_score):
-                    highest_object = input_matrix[i][j]
-                    input_matrix[x][y].wanted_x_y = i,j
+                if(__input_matrix[i][j].real_score > highest_object.real_score):
+                    highest_object = __input_matrix[i][j]
+                    __input_matrix[x][y].wanted_x_y = i,j
 
+
+# 計算自覺分數
+def find_self_feel_score(x, y, input_matrix):
+    # 處裡邊界條件
+    __input_matrix = input_matrix
+    if(0==x):                        x_range = [x, x+1]
+    elif(x+1==len(__input_matrix)):    x_range = [x-1, x]
+    else:                            x_range = [x-1, x, x+1]
+    if(0==y):                        y_range = [y, y+1]
+    elif(y+1==len(__input_matrix[0])): y_range = [y-1, y]
+    else:                            y_range = [y-1, y, y+1]
+
+    # 對四周進行探訪
+    for i in x_range:
+        for j in y_range:
+            if(None == __input_matrix[i][j]): continue #這個位置沒人
+            if(__input_matrix[x][y].sex == __input_matrix[i][j].sex): continue # 跳過同性
+            if((-1,-1) == list_2D_plane[i][j].wanted_x_y): continue #這個位置沒找目標
+            if(i==x and j==y):continue # 跳過自己
+
+            # 取得此人心儀對象的位置
+            wanted_x, wanted_y = list_2D_plane[i][j].wanted_x_y
+
+            # 沒被選中，重新評估自覺分數
+            if(x, y != wanted_x, wanted_y):
+                print("沒被選中，重新評估自覺分數")
+                __input_matrix[x][y].estimator_self_feel_score(False, __input_matrix[i][j].real_score)
+            # 被選中，重新評估自覺分數
+            else:
+                print("被選中，重新評估自覺分數")
+                __input_matrix[x][y].estimator_self_feel_score(True, __input_matrix[i][j].real_score)
+            
 # 展示分布
 def display_plane(input_matrix):
     col_size, row_size = len(input_matrix), len(input_matrix[0])
@@ -71,25 +104,35 @@ for i in range(len(list_2D_plane)):
         # list_women.append(Human('F', np.random.randint(0, 100)))
 
 display_plane(list_2D_plane)
+print("初始值")
 cv.waitKey(0)
 
-# 打分數
-for i in range(len(list_2D_plane)):
-    for j in range(len(list_2D_plane[i])):
-        if(None == list_2D_plane[i][j]): continue #這個位置沒人
-        find_round_highest_obj(i, j, list_2D_plane)
+for T in range(1000):
+    print("T={}".format(T))
 
-# 配對
-for i in range(len(list_2D_plane)):
-    for j in range(len(list_2D_plane[i])):
-        if(None == list_2D_plane[i][j]): continue #這個位置沒人
-        wanted_x, wanted_y = list_2D_plane[i][j].wanted_x_y 
-        if(i, j == list_2D_plane[wanted_x][wanted_y].wanted_x_y):
-            print("配對成功!")
-            list_2D_plane[i][j] = None # 把人趕走
-            display_plane(list_2D_plane)
-            cv.waitKey(1)
+    # 找到周圍最高分位置
+    for i in range(len(list_2D_plane)):
+        for j in range(len(list_2D_plane[i])):
+            if(None == list_2D_plane[i][j]): continue #這個位置沒人
+            find_round_highest_xy(i, j, list_2D_plane)
 
-display_plane(list_2D_plane)
-cv.waitKey(0)
+    # 計算自覺分數
+    for i in range(len(list_2D_plane)):
+        for j in range(len(list_2D_plane[i])):
+            if(None == list_2D_plane[i][j]): continue #這個位置沒人
+            find_self_feel_score(i, j, list_2D_plane)
 
+    # 配對
+    for i in range(len(list_2D_plane)):
+        for j in range(len(list_2D_plane[i])):
+            if(None == list_2D_plane[i][j]): continue #這個位置沒人
+            if((-1,-1) == list_2D_plane[i][j].wanted_x_y): continue #這個位置沒找目標
+            wanted_x, wanted_y = list_2D_plane[i][j].wanted_x_y
+            if(i, j == list_2D_plane[wanted_x][wanted_y].wanted_x_y):
+                print("配對成功!")
+                list_2D_plane[i][j] = None # 把人趕走
+                display_plane(list_2D_plane)
+                cv.waitKey(1)
+
+    display_plane(list_2D_plane)
+    cv.waitKey(30)
