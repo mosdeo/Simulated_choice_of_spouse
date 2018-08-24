@@ -3,7 +3,7 @@ import cv2 as cv
 from Human import Human
 
 # 取得周圍最高分
-def get_round_highest_obj(x, y, input_matrix):
+def find_round_highest_obj(x, y, input_matrix):
     # 處裡邊界條件
     if(0==x):                        x_range = [x, x+1]
     elif(x+1==len(input_matrix)):    x_range = [x-1, x]
@@ -15,6 +15,9 @@ def get_round_highest_obj(x, y, input_matrix):
     highest_object = None
     for i in x_range:
         for j in y_range:
+            if(None == input_matrix[i][j]): continue #這個位置沒人
+            else: input_matrix[x][y].wanted_x_y = -1, -1
+
             # 跳過自己、跳過同性
             if(i==x and j==y):continue
             if(input_matrix[x][y].sex == input_matrix[i][j].sex): continue
@@ -24,14 +27,13 @@ def get_round_highest_obj(x, y, input_matrix):
                 # 如果分數大於等於自己，放進口袋
                 if(input_matrix[i][j].real_score > input_matrix[x][y].real_score):
                     highest_object = input_matrix[i][j]
-                    highest_object.x_y = i,j
+                    input_matrix[x][y].wanted_x_y = i,j
             # 如果口袋不是空的
             else:
                 # 如果分數大於等於口袋，放進口袋
                 if(input_matrix[i][j].real_score > highest_object.real_score):
                     highest_object = input_matrix[i][j]
-                    highest_object.x_y = i,j
-    return highest_object
+                    input_matrix[x][y].wanted_x_y = i,j
 
 
 # 給各 100 位男女，隨機分配真實分數
@@ -67,5 +69,20 @@ for i in range(len(list_2D_plane)):
 cv.imshow("Plane", cv.resize(plane, None, None, 5, 5, cv.INTER_NEAREST))
 cv.waitKey(0)
 
+# 打分數
+for i in range(len(list_2D_plane)):
+    for j in range(len(list_2D_plane[i])):
+        if(None == list_2D_plane[i][j]): continue #這個位置沒人
+        find_round_highest_obj(i, j, list_2D_plane)
+
 # 配對
+for i in range(len(list_2D_plane)):
+    for j in range(len(list_2D_plane[i])):
+        if(None == list_2D_plane[i][j]): continue #這個位置沒人
+        wanted_x, wanted_y = list_2D_plane[i][j].wanted_x_y 
+        if(i, j == list_2D_plane[wanted_x][wanted_y].wanted_x_y):
+            print("配對成功!")
+            list_2D_plane[i][j] = None # 把人趕走
+
+
 
