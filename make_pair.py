@@ -86,6 +86,7 @@ def random_walk(x, y, input_matrix):
         next_x, next_y = list_free_space[np.random.randint(len(list_free_space))] #隨機選取沒人的位置
         __input_matrix[next_x][next_y] = __input_matrix[x][y] #把自己放到新位置
         __input_matrix[x][y] = None #舊位置空出來
+        __input_matrix[x][y].wanted_x_y = None #經過移動之後要清除心儀對象
 
 # 展示分布
 def display_plane(input_matrix):
@@ -145,10 +146,14 @@ for T in range(1000):
             if(None == list_2D_plane[i][j]): continue # 這個位置沒人
             if(None == list_2D_plane[i][j].wanted_x_y): continue # 這個位置沒找目標
             wanted_x, wanted_y = list_2D_plane[i][j].wanted_x_y # 找出此人心儀對象座標
+            if(None == list_2D_plane[wanted_x][wanted_y]): continue # 心儀對象已經先配對到，走了!
             if(None == list_2D_plane[wanted_x][wanted_y].wanted_x_y): continue # 心儀對象還沒找到心儀對象
             if((i,j) == list_2D_plane[wanted_x][wanted_y].wanted_x_y): # 心儀對象的心儀對象座標，跟自己一樣嗎?
-                print("T={}, 配對成功!, M={}, F={}"
-                        .format(T, list_2D_plane[i][j].real_score, list_2D_plane[wanted_x][wanted_y].real_score))
+                print("T={}, 配對成功!, M={}, xy={}, F={}, xy={}"
+                        .format(T, 
+                                list_2D_plane[i][j].real_score, list_2D_plane[i][j].wanted_x_y,
+                                list_2D_plane[wanted_x][wanted_y].real_score, list_2D_plane[wanted_x][wanted_y].wanted_x_y
+                                ))
                 list_2D_plane[i][j] = None # 把人趕走
                 list_2D_plane[wanted_x][wanted_y] = None # 把人趕走
     display_plane(list_2D_plane)
