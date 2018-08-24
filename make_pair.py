@@ -6,12 +6,12 @@ from Human import Human
 def find_round_highest_xy(x, y, input_matrix):
     # 處裡邊界條件
     __input_matrix = input_matrix
-    if(0==x):                        x_range = [x, x+1]
+    if(0==x):                          x_range = [x, x+1]
     elif(x+1==len(__input_matrix)):    x_range = [x-1, x]
-    else:                            x_range = [x-1, x, x+1]
-    if(0==y):                        y_range = [y, y+1]
+    else:                              x_range = [x-1, x, x+1]
+    if(0==y):                          y_range = [y, y+1]
     elif(y+1==len(__input_matrix[0])): y_range = [y-1, y]
-    else:                            y_range = [y-1, y, y+1]
+    else:                              y_range = [y-1, y, y+1]
 
     highest_object = None
     for i in x_range:
@@ -41,12 +41,12 @@ def find_round_highest_xy(x, y, input_matrix):
 def find_self_feel_score(x, y, input_matrix):
     # 處裡邊界條件
     __input_matrix = input_matrix
-    if(0==x):                        x_range = [x, x+1]
+    if(0==x):                          x_range = [x, x+1]
     elif(x+1==len(__input_matrix)):    x_range = [x-1, x]
-    else:                            x_range = [x-1, x, x+1]
-    if(0==y):                        y_range = [y, y+1]
+    else:                              x_range = [x-1, x, x+1]
+    if(0==y):                          y_range = [y, y+1]
     elif(y+1==len(__input_matrix[0])): y_range = [y-1, y]
-    else:                            y_range = [y-1, y, y+1]
+    else:                              y_range = [y-1, y, y+1]
 
     # 對四周進行探訪
     for i in x_range:
@@ -67,7 +67,31 @@ def find_self_feel_score(x, y, input_matrix):
             else:
                 print("被選中，重新評估自覺分數")
                 __input_matrix[x][y].estimator_self_feel_score(True, __input_matrix[i][j].real_score)
-            
+
+# 漫步移動
+def random_walk(x, y, input_matrix):
+    # 處裡邊界條件
+    __input_matrix = input_matrix
+    if(0==x):                          x_range = [x, x+1]
+    elif(x+1==len(__input_matrix)):    x_range = [x-1, x]
+    else:                              x_range = [x-1, x, x+1]
+    if(0==y):                          y_range = [y, y+1]
+    elif(y+1==len(__input_matrix[0])): y_range = [y-1, y]
+    else:                              y_range = [y-1, y, y+1]
+
+    # 對四周進行探訪
+    list_free_space = []
+    for i in x_range:
+        for j in y_range:
+            #這個位置沒人
+            if(None == __input_matrix[i][j]):
+                list_free_space.append((i,j))
+
+    if(0 != len(list_free_space)):
+        next_x, next_y = np.random.choice(list_free_space)
+        __input_matrix[next_x][next_y] = __input_matrix[x][y]
+        __input_matrix[x][y] = None
+
 # 展示分布
 def display_plane(input_matrix):
     col_size, row_size = len(input_matrix), len(input_matrix[0])
@@ -100,8 +124,6 @@ for i in range(len(list_2D_plane)):
             1: Human('M', np.random.randint(0, 100)),
             2: Human('F', np.random.randint(0, 100))
         }[rand_case]
-        # list___men.append(Human('M', np.random.randint(0, 100)))
-        # list_women.append(Human('F', np.random.randint(0, 100)))
 
 display_plane(list_2D_plane)
 print("初始值")
@@ -109,6 +131,12 @@ cv.waitKey(0)
 
 for T in range(1000):
     print("T={}".format(T))
+
+    # 漫步移動
+    for i in range(len(list_2D_plane)):
+        for j in range(len(list_2D_plane[i])):
+            if(None == list_2D_plane[i][j]): continue #這個位置沒人
+            random_walk(i, j, list_2D_plane)
 
     # 找到周圍最高分位置
     for i in range(len(list_2D_plane)):
@@ -133,6 +161,7 @@ for T in range(1000):
                 list_2D_plane[i][j] = None # 把人趕走
                 display_plane(list_2D_plane)
                 cv.waitKey(1)
+
 
     display_plane(list_2D_plane)
     cv.waitKey(30)
