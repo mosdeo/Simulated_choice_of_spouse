@@ -2,38 +2,6 @@ import numpy as np
 import cv2 as cv
 from Human import Human
 
-# 取得周圍最高分對象位置
-def find_round_highest_xy(x, y, input_matrix):
-    # 處裡邊界條件
-    __input_matrix = input_matrix
-    if(0==x):                          x_range = [x, x+1]
-    elif(x+1==len(__input_matrix)):    x_range = [x-1, x]
-    else:                              x_range = [x-1, x, x+1]
-    if(0==y):                          y_range = [y, y+1]
-    elif(y+1==len(__input_matrix[0])): y_range = [y-1, y]
-    else:                              y_range = [y-1, y, y+1]
-
-    __input_matrix[x][y].wanted_x_y = None # 清除口袋
-
-    for i in x_range:
-        for j in y_range:
-            if(None == __input_matrix[i][j]): continue #這個位置沒人
-            if(__input_matrix[x][y].sex == __input_matrix[i][j].sex): continue # 跳過同性
-            if(i==x and j==y):continue # 跳過自己
-            
-            # 如果口袋是空的
-            if(None == __input_matrix[x][y].wanted_x_y):
-                # 如果此人真實分數，大於等於自己自覺分數
-                if(__input_matrix[i][j].real_score >= __input_matrix[x][y].get_feel_score()):
-                    __input_matrix[x][y].wanted_x_y = i,j # 放進口袋
-            # 如果口袋不是空的
-            else:
-                wanted_x, wanted_y = __input_matrix[x][y].wanted_x_y #挖出自己口袋對象座標
-                # 如果此人真實分數，大於等於口袋對象真實分數
-                if(__input_matrix[i][j].real_score >= __input_matrix[wanted_x][wanted_y].real_score):
-                    __input_matrix[x][y].wanted_x_y = i,j # 放進口袋
-
-
 # 計算自覺分數
 def find_self_feel_score(x, y, input_matrix):
     # 處裡邊界條件
@@ -105,7 +73,7 @@ for T in range(1000):
     for i in range(len(list_2D_plane)):
         for j in range(len(list_2D_plane[i])):
             if(None == list_2D_plane[i][j]): continue #這個位置沒人
-            find_round_highest_xy(i, j, list_2D_plane)
+            list_2D_plane[i][j].set_find_round_highest_xy(i, j, list_2D_plane)
 
     # 計算自覺分數
     for i in range(len(list_2D_plane)):
