@@ -10,8 +10,10 @@ class Human(object):
         self.__feel_score_max = 100
         self.__feel_score_min = 0
         self.wanted_x_y = None
+        self.experience = 0
 
     def estimator_self_feel_score(self, isSelected, other_real_score):
+        self.experience += 1
         if(isSelected):
             self.__feel_score_min = max(self.__feel_score_min, other_real_score) # 被選中，提高自信
         else:

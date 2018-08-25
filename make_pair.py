@@ -55,11 +55,11 @@ def find_self_feel_score(x, y, input_matrix):
 
             # 沒被選中，重新評估自覺分數
             if(None==__input_matrix[i][j].wanted_x_y or x,y!=__input_matrix[i][j].wanted_x_y):
-                print("沒被選中，重新評估自覺分數")
+                # print("沒被選中，重新評估自覺分數")
                 __input_matrix[x][y].estimator_self_feel_score(False, __input_matrix[i][j].real_score)
             # 被選中，重新評估自覺分數
             else:
-                print("被選中，重新評估自覺分數")
+                # print("被選中，重新評估自覺分數")
                 __input_matrix[x][y].estimator_self_feel_score(True, __input_matrix[i][j].real_score)
 
 # 漫步移動
@@ -150,10 +150,10 @@ for T in range(1000):
             if(None == list_2D_plane[wanted_x][wanted_y]): continue # 心儀對象已經先配對到，走了!
             if(None == list_2D_plane[wanted_x][wanted_y].wanted_x_y): continue # 心儀對象還沒找到心儀對象
             if((i,j) == list_2D_plane[wanted_x][wanted_y].wanted_x_y): # 心儀對象的心儀對象座標，跟自己一樣嗎?
-                print("T={}, 配對成功!, M={}, xy={}, F={}, xy={}"
+                print("T={}, 配對成功!, M={}, exp={}, F={}, exp={}"
                         .format(T, 
-                                list_2D_plane[i][j].real_score, list_2D_plane[i][j].wanted_x_y,
-                                list_2D_plane[wanted_x][wanted_y].real_score, list_2D_plane[wanted_x][wanted_y].wanted_x_y
+                                list_2D_plane[i][j].real_score, list_2D_plane[i][j].experience,
+                                list_2D_plane[wanted_x][wanted_y].real_score, list_2D_plane[wanted_x][wanted_y].experience
                                 ))
                 list_2D_plane[i][j] = None # 把人趕走
                 list_2D_plane[wanted_x][wanted_y] = None # 把人趕走
