@@ -49,7 +49,6 @@ def find_self_feel_score(x, y, input_matrix):
     for i in x_range:
         for j in y_range:
             if(None == __input_matrix[i][j]): continue #這個位置沒人
-            # if(None == __input_matrix[i][j].wanted_x_y): continue #這個位置沒找到心儀對象
             if(__input_matrix[x][y].sex == __input_matrix[i][j].sex): continue # 跳過同性
             if(i==x and j==y):continue # 跳過自己
 
@@ -107,7 +106,7 @@ def display_plane(input_matrix):
     cv.imshow("Plane", cv.resize(plane, None, None, 5, 5, cv.INTER_NEAREST))
 
 
-# 給各 100 位男女，隨機分配真實分數
+# 給大約各 100 位男女，隨機分配真實分數
 list___men, list_women = [], []
 list_2D_plane = [i for i in range(70)] #= np.ndarray(shape=(70, 70))
 for i in range(len(list_2D_plane)):
@@ -127,7 +126,7 @@ print("初始值")
 cv.waitKey(0)
 
 for T in range(1000):
-    print("T={}".format(T))
+    # print("T={}".format(T))
 
     # 找到周圍最高分位置
     for i in range(len(list_2D_plane)):
@@ -160,7 +159,7 @@ for T in range(1000):
     display_plane(list_2D_plane)
     cv.waitKey(1)
 
-    if(T<30):continue
+    # if(T<30):continue
     # 漫步移動
     for i in range(len(list_2D_plane)):
         for j in range(len(list_2D_plane[i])):
